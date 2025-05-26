@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Typing Placeholder Example</title>
+    <style>
+      input,
+      textarea {
+        padding: 4px 10px;
+        font-size: 1rem;
+        width: 300px;
+        margin: 50px auto;
+        display: block;
+      }
+      textarea {
+        height: 150px;
+      }
+    </style>
+  </head>
+  <body>
+    <input id="typer" />
+    <textarea id="typer-textarea"></textarea>
+
+    <script type="module">
+      import PlaceholderTyper from "../src/PlaceholderTyper.ts";
+
+      new PlaceholderTyper("#typer", {
+        strings: [
+          "Looking for inspiration?",
+          "Type a keyword: AI, nature, dreams...",
+          "What's on your mind today?",
+          "Start typing to unlock ideas ✨",
+        ],
+        speed: 100,
+        loop: true,
+        delayBetween: 1000,
+      });
+      new PlaceholderTyper("#typer-textarea", {
+        strings: [
+          "Start typing your thoughts here...",
+          "It can be a poem, an idea, or just a random note.\nDon't worry — no one is judging.",
+        ],
+        speed: 100,
+        loop: true,
+        delayBetween: 1000,
+      });
+    </script>
+  </body>
+</html>
