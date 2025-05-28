@@ -28,7 +28,7 @@ export default function App() {
         as="textarea"
         strings={[
           "Start typing your thoughts here...",
-          "It can be a poem, an idea, or just a random note.\nDon't worry — no one is judging.",
+          "It can be a poem, an idea, or just a random note.\n\nDon't worry — no one is judging.",
         ]}
         loop
         speed={100}
