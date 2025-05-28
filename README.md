@@ -10,12 +10,11 @@
 
 ## ✨ Features
 
-- Animate placeholder text in `input` or `textarea`
-- Smooth typing and deleting
-- Looping support
-- Custom cursor character
-- Works with **React** or plain **JavaScript**
-- Written in **TypeScript**
+- Typewriter-like animated placeholder text
+- Works with both `<input>` and `<textarea>` elements
+- Lightweight and dependency-free core
+- React wrapper with full type support
+- TypeScript compatible
 
 ---
 
@@ -70,108 +69,44 @@ yarn add typing-placeholder-input
 ### ✅ React
 
 ```tsx
-import TypingInput from "typing-placeholder-input/react";
+import React from "react";
+import PlaceholderTyperWrapper from "typing-placeholder-input/react";
 
 function App() {
   return (
-    <div
-      style={{
-        padding: "2rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1rem",
-      }}
-    >
-      <TypingInput
-        as="input"
-        strings={[
-          "Looking for inspiration?",
-          "Type a keyword: AI, nature, dreams...",
-          "Start typing to unlock ideas ✨",
-        ]}
-        loop
-        style={{ width: "300px" }}
-      />
-      <TypingInput
-        as="textarea"
-        strings={[
-          "Write your thoughts here...",
-          "This is your space to be creative.",
-        ]}
-        loop
-        speed={100}
-        delayBetween={1000}
-        cursor="|"
-        style={{ width: "300px", height: "150px" }}
-      />
-    </div>
+    <PlaceholderTyperWrapper
+      as="input"
+      strings={["Hello", "World", "Start typing..."]}
+      speed={100}
+      delayBetween={1500}
+      deleteSpeed={50}
+      loop
+      cursor="|"
+      className="my-input"
+      onChange={(e) => console.log(e.target.value)}
+    />
   );
 }
+
+export default App;
 ```
 
----
+You can also use as="textarea" to render a `<textarea>` instead of an `<input>`.
 
-## 📘 API Reference
+## 🔧 Props
 
-### PlaceholderTyper (Vanilla JS)
+These options apply to both the vanilla and React version:
 
-```ts
-new PlaceholderTyper(
-  selector: string | HTMLInputElement | HTMLTextAreaElement,
-  options: PlaceholderTyperOptions
-)
-```
+| Prop           | Type       | Default  | Description                            |
+| -------------- | ---------- | -------- | -------------------------------------- |
+| `strings`      | `string[]` | required | The phrases to type                    |
+| `speed`        | `number`   | 70       | Typing speed (ms per character)        |
+| `deleteSpeed`  | `number`   | 40       | Deleting speed (ms per character)      |
+| `delayBetween` | `number`   | 1500     | Delay between strings                  |
+| `loop`         | `boolean`  | true     | Whether to loop the typing animation   |
+| `cursor`       | `string`   | `""`     | Character to show at the end of typing |
 
-#### PlaceholderTyperOptions
-
-| Name           | Type       | Default | Description                     |
-| -------------- | ---------- | ------- | ------------------------------- |
-| `strings`      | `string[]` | —       | Strings to type                 |
-| `speed`        | `number`   | 70      | Typing speed in ms              |
-| `delayBetween` | `number`   | 1500    | Delay between phrases in ms     |
-| `deleteSpeed`  | `number`   | 40      | Deletion speed in ms            |
-| `loop`         | `boolean`  | true    | Loop back to first string       |
-| `cursor`       | `string`   | `""`    | Character appended while typing |
-
-#### Methods
-
-- `stop(): void` — Immediately stops the typing loop.
-
----
-
-### React Component: `TypingInput`
-
-Props include all `PlaceholderTyperOptions` plus:
-
-| Prop        | Type                      | Description             |
-| ----------- | ------------------------- | ----------------------- |
-| `as`        | `"input"` or `"textarea"` | Which element to render |
-| `className` | `string`                  | Optional class name     |
-| `style`     | `React.CSSProperties`     | Optional inline styles  |
-| `name`      | `string`                  | Input name              |
-
----
-
-## 📁 Project Structure
-
-```
-typing-placeholder-input/
-├── dist/                   # Compiled output
-│   ├── index.js
-│   ├── index.d.ts
-│   └── react/
-├── src/                    # Source files
-│   ├── PlaceholderTyper.ts
-│   └── react/TypingInput.tsx
-├── example/                # Demos
-│   ├── vanilla/
-│   └── react/
-├── package.json
-├── vite.config.ts
-└── README.md
-```
-
----
+Additionally, the React wrapper supports all native `<input>` or `<textarea>` props.
 
 ## 🧪 Examples
 
@@ -202,7 +137,7 @@ npm run dev
 npm run build
 ```
 
-Uses `vite-plugin-dts` to bundle type declarations.
+Uses `vite-plugin-dts` for generating bundled type declarations.
 
 ---
 
