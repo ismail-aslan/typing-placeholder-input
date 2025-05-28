@@ -1,0 +1,23 @@
+# Ignore source code
+src/
+
+# Ignore examples
+example/
+
+# Ignore assets
+assets/
+
+# Ignore configuration files
+vite.config.ts
+tsconfig.json
+tsconfig.*.json
+*.config.js
+*.config.ts
+
+# Ignore lock files (optional, up to you)
+package-lock.json
+
+# Ignore miscellaneous
+.DS_Store
+.vscode/
+*.log
