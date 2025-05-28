@@ -4,7 +4,6 @@ export interface PlaceholderTyperOptions {
   delayBetween?: number;
   deleteSpeed?: number;
   loop?: boolean;
-  startDelay?: number;
   cursor?: string;
 }
 
@@ -13,6 +12,8 @@ export default class PlaceholderTyper {
   private options: Required<PlaceholderTyperOptions>;
   private index = 0;
   private charIndex = 0;
+  private isActive = true;
+  private timeoutId: number | null = null;
 
   constructor(
     selector: string | HTMLInputElement | HTMLTextAreaElement,
@@ -22,61 +23,87 @@ export default class PlaceholderTyper {
       typeof selector === "string"
         ? document.querySelector(selector)
         : selector;
+
     if (
       !el ||
       !(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement)
     ) {
       throw new Error("Invalid input element");
     }
-    this.el = el;
 
+    this.el = el;
     this.options = {
       speed: 70,
       delayBetween: 1500,
       deleteSpeed: 40,
       loop: true,
-      startDelay: 0,
       cursor: "",
       ...options,
     };
 
-    if (this.options.startDelay) {
-      setTimeout(() => this.startTyping(), this.options.startDelay);
-    } else {
-      this.startTyping();
-    }
+    this.startTyping();
   }
 
   private async startTyping() {
     const { strings, loop } = this.options;
-    while (loop || this.index < strings.length) {
+
+    while (this.isActive && (loop || this.index < strings.length)) {
       const text = strings[this.index % strings.length];
-      await this.typePhrase(text);
-      await this.delay(this.options.delayBetween);
-      await this.deletePhrase();
+
+      if (!(await this.typePhrase(text))) break;
+      if (!(await this.delayIfActive(this.options.delayBetween))) break;
+      if (!(await this.deletePhrase())) break;
+
       this.index++;
     }
   }
 
-  private async typePhrase(text: string) {
+  private async typePhrase(text: string): Promise<boolean> {
+    if (!this.isActive) return false;
     this.charIndex = 0;
+
     while (this.charIndex <= text.length) {
+      if (!this.isActive) return false;
+
       this.el.placeholder = text.slice(0, this.charIndex) + this.options.cursor;
-      await this.delay(this.options.speed);
       this.charIndex++;
+
+      if (!(await this.delayIfActive(this.options.speed))) return false;
     }
+    return true;
   }
 
-  private async deletePhrase() {
+  private async deletePhrase(): Promise<boolean> {
+    if (!this.isActive) return false;
+
     while (this.charIndex > 0) {
+      if (!this.isActive) return false;
+
       this.charIndex--;
       this.el.placeholder =
         this.el.placeholder.slice(0, this.charIndex) + this.options.cursor;
-      await this.delay(this.options.deleteSpeed);
+
+      if (!(await this.delayIfActive(this.options.deleteSpeed))) return false;
     }
+    return true;
   }
 
-  private delay(ms: number) {
-    return new Promise((res) => setTimeout(res, ms));
+  private delayIfActive(ms: number): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (!this.isActive) return resolve(false);
+
+      this.timeoutId = window.setTimeout(() => {
+        this.timeoutId = null;
+        resolve(this.isActive);
+      }, ms);
+    });
+  }
+
+  public stop() {
+    this.isActive = false;
+    if (this.timeoutId !== null) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
   }
 }

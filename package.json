@@ -5,8 +5,8 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "example:vanilla": "vite --config example/vanilla/vite.config.ts"
   },
   "keywords": [
     "placeholder",
@@ -45,7 +45,7 @@
       "types": "./dist/index.d.ts"
     },
     "./react": {
-      "import": "./dist/react/TypingInput.js",
+      "import": "./dist/react.js",
       "types": "./dist/react/TypingInput.d.ts"
     }
   }

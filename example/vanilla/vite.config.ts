@@ -9,10 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       // Make sure your library import works in vanilla example
-      "typing-placeholder-input": resolve(
-        __dirname,
-        "../../dist/placeholder-typer.es.js"
-      ),
+      "typing-placeholder-input": resolve(__dirname, "../../dist/index.js"),
     },
   },
 });

@@ -1,71 +1,61 @@
 import React, { useEffect, useRef } from "react";
-import PlaceholderTyper, { PlaceholderTyperOptions } from "../PlaceholderTyper";
+import PlaceholderTyperClass, {
+  PlaceholderTyperOptions,
+} from "../PlaceholderTyper";
 
-type ElementType = "input" | "textarea";
+function useDeepCompareMemoize<T>(value: T): T {
+  const ref = useRef<T>(value);
+  const prev = JSON.stringify(ref.current);
+  const next = JSON.stringify(value);
+  if (prev !== next) {
+    ref.current = value;
+  }
+  return ref.current;
+}
 
-type BaseProps = {
-  as?: ElementType;
+interface PlaceholderTyperWrapperProps extends PlaceholderTyperOptions {
+  as?: "input" | "textarea";
   className?: string;
-  id?: string;
+  style?: React.CSSProperties;
   name?: string;
-  placeholder?: string;
-} & PlaceholderTyperOptions;
+}
 
-type InputProps = BaseProps &
-  React.InputHTMLAttributes<HTMLInputElement> & { as?: "input" };
+const PlaceholderTyperWrapper: React.FC<PlaceholderTyperWrapperProps> = ({
+  as = "input",
+  className,
+  style,
+  name,
+  ...typerOptions
+}) => {
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const typerRef = useRef<PlaceholderTyperClass | null>(null);
 
-type TextareaProps = BaseProps &
-  React.TextareaHTMLAttributes<HTMLTextAreaElement> & { as: "textarea" };
-
-type TypingInputProps = InputProps | TextareaProps;
-
-const TypingInput = React.forwardRef<
-  HTMLInputElement | HTMLTextAreaElement,
-  TypingInputProps
->((props, ref) => {
-  const { as = "input", className, id, name, placeholder, ...rest } = props;
-
-  const localRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
-  const combinedRef =
-    (ref as React.RefObject<HTMLInputElement | HTMLTextAreaElement>) ||
-    localRef;
+  // ✅ Use deep compare memoization to prevent unnecessary reinitialization
+  const stableOptions = useDeepCompareMemoize(typerOptions);
 
   useEffect(() => {
-    if (combinedRef.current) {
-      new PlaceholderTyper(
-        combinedRef.current,
-        rest as PlaceholderTyperOptions
+    if (inputRef.current) {
+      typerRef.current = new PlaceholderTyperClass(
+        inputRef.current,
+        stableOptions
       );
     }
-  }, [combinedRef, rest]);
+    return () => {
+      typerRef.current?.stop();
+    };
+  }, [stableOptions]);
 
-  if (as === "textarea") {
-    return (
-      <textarea
-        ref={combinedRef as React.Ref<HTMLTextAreaElement>}
-        className={className}
-        id={id}
-        name={name}
-        placeholder={placeholder}
-        {...(rest as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
-      />
-    );
-  }
+  const InputComponent = as;
 
-  const inputProps = rest as React.InputHTMLAttributes<HTMLInputElement>;
   return (
-    <input
-      ref={combinedRef as React.Ref<HTMLInputElement>}
+    <InputComponent
+      ref={inputRef as any}
       className={className}
-      id={id}
+      style={style}
       name={name}
-      type={inputProps.type ?? "text"}
-      placeholder={placeholder}
-      {...inputProps}
     />
   );
-});
+};
 
-TypingInput.displayName = "TypingInput";
-
-export default TypingInput;
+export type { PlaceholderTyperWrapperProps };
+export default PlaceholderTyperWrapper;
