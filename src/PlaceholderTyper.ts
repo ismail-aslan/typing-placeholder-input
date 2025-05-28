@@ -33,12 +33,12 @@ export default class PlaceholderTyper {
 
     this.el = el;
     this.options = {
-      speed: 70,
-      delayBetween: 1500,
-      deleteSpeed: 40,
-      loop: true,
-      cursor: "",
-      ...options,
+      strings: options.strings,
+      speed: options.speed ?? 70,
+      delayBetween: options.delayBetween ?? 1500,
+      deleteSpeed: options.deleteSpeed ?? 40,
+      loop: options.loop ?? true,
+      cursor: options.cursor ?? "",
     };
 
     this.startTyping();

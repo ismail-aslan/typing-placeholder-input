@@ -13,26 +13,49 @@ function useDeepCompareMemoize<T>(value: T): T {
   return ref.current;
 }
 
-interface PlaceholderTyperWrapperProps extends PlaceholderTyperOptions {
+type BaseProps = PlaceholderTyperOptions & {
   as?: "input" | "textarea";
-  className?: string;
-  style?: React.CSSProperties;
-  name?: string;
-}
+};
 
-const PlaceholderTyperWrapper: React.FC<PlaceholderTyperWrapperProps> = ({
-  as = "input",
-  className,
-  style,
-  name,
-  ...typerOptions
-}) => {
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
+  BaseProps & {
+    as?: "input";
+  };
+
+type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> &
+  BaseProps & {
+    as: "textarea";
+  };
+
+type PlaceholderTyperWrapperProps = InputProps | TextareaProps;
+
+const PlaceholderTyperWrapper: React.FC<PlaceholderTyperWrapperProps> = (
+  props
+) => {
+  const { as = "input", ...rest } = props;
+
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const typerRef = useRef<PlaceholderTyperClass | null>(null);
 
-  // ✅ Use deep compare memoization to prevent unnecessary reinitialization
-  const stableOptions = useDeepCompareMemoize(typerOptions);
+  // Extract PlaceholderTyper-specific options
+  const {
+    strings,
+    speed,
+    delayBetween,
+    deleteSpeed,
+    loop,
+    cursor,
+    ...nativeProps
+  } = rest;
 
+  const stableOptions = useDeepCompareMemoize({
+    strings,
+    speed,
+    delayBetween,
+    deleteSpeed,
+    loop,
+    cursor,
+  });
   useEffect(() => {
     if (inputRef.current) {
       typerRef.current = new PlaceholderTyperClass(
@@ -45,14 +68,19 @@ const PlaceholderTyperWrapper: React.FC<PlaceholderTyperWrapperProps> = ({
     };
   }, [stableOptions]);
 
-  const InputComponent = as;
+  if (as === "textarea") {
+    return (
+      <textarea
+        ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+        {...(nativeProps as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+      />
+    );
+  }
 
   return (
-    <InputComponent
-      ref={inputRef as any}
-      className={className}
-      style={style}
-      name={name}
+    <input
+      ref={inputRef as React.RefObject<HTMLInputElement>}
+      {...(nativeProps as React.InputHTMLAttributes<HTMLInputElement>)}
     />
   );
 };
