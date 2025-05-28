@@ -28,6 +28,14 @@ yarn add typing-placeholder-input
 
 ---
 
+## ✨ Demo
+
+<p align="center">
+  <img src="./assets/demo.gif" alt="Typing Placeholder Demo" width="300" style="border-radius: 12px;" />
+</p>
+
+---
+
 ## 🚀 Quick Start
 
 ### ✅ Vanilla JavaScript
