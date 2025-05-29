@@ -16,6 +16,14 @@
     "typescript"
   ],
   "author": "Ismail Aslan <ismailaslan1097@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ismail-aslan/typing-placeholder-input.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ismail-aslan/typing-placeholder-input/issues"
+  },
+  "homepage": "https://github.com/ismail-aslan/typing-placeholder-input#readme",
   "license": "MIT",
   "description": "A small library to animate placeholder typing for input elements.",
   "sideEffects": false,
